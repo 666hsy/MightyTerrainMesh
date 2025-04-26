@@ -1,11 +1,9 @@
-﻿namespace MightyTerrainMesh
-{
-    using System.Collections;
-    using System.Collections.Generic;
-    using UnityEngine;
-    using KdTree;
-    using KdTree.Math;    
+﻿using System.Collections.Generic;
+using KdTree;
+using UnityEngine;    
 
+namespace MightyTerrainMesh
+{
     public class SampleVertexData
     {
         public Vector3 Position;
@@ -31,6 +29,7 @@
             scaner.Run(mVertex.Position, out mVertex.Position, out mVertex.Normal);
         }
         protected SampleVertexData mVertex;
+        //每个node都有这么一个字典
         public Dictionary<byte, SampleVertexData> Boundaries = new Dictionary<byte, SampleVertexData>();
         public abstract Vector3 Pos { get; }
         public abstract void GetData(List<SampleVertexData> lPos, Dictionary<byte, List<SampleVertexData>> bd);
@@ -66,17 +65,20 @@
             Boundaries.Add(bk, vert);
         }
     }
+    /// <summary>
+    /// 每块一个Node
+    /// </summary>
     public class SamplerNode : SamplerBase
     {
         public override Vector3 Pos { get { return mVertex != null ? mVertex.Position : Vector3.zero; } }
-        public SamplerBase[] Children = new SamplerBase[4];
-        public bool isFullLeaf
+        public SamplerBase[] Children = new SamplerBase[4]; //对每块的内部再进行四叉树分割
+        public bool isFullLeaf  //叶子节点的上一层节点
         {
             get
             {
                 for (int i = 0; i < Children.Length; ++i)
                 {
-                    if (Children[i] == null || !(Children[i] is SamplerLeaf))
+                    if (Children[i] == null || !(Children[i] is SamplerLeaf))   
                         return false;
                 }
                 return true;
@@ -151,6 +153,7 @@
             int idx = (subz >> subdivision) * 2 + (subx >> subdivision);
             Children[idx].AddBoundary(subdivision, subx, subz, bk, point);
         }
+        
         public SamplerLeaf Combine(float angleErr)
         {
             for (int i = 0; i < Children.Length; ++i)
@@ -165,6 +168,7 @@
                 if (Mathf.Rad2Deg * Mathf.Acos(dot) >= angleErr)
                     return null;
             }
+            //走到这里代表：父节点采样点的法线与4个子节点法线之间夹角都小于我们设定的容差
             SamplerLeaf leaf = new SamplerLeaf(mVertex);
             for (int i = 0; i < Children.Length; ++i)
             {
@@ -180,7 +184,7 @@
             leaf.Boundaries = Boundaries;
             return leaf;
         }
-        public void CombineNode(float angleErr)
+        public void CombineNode(float angleErr) //由于有合并叶子节点的操作，所以最后的四叉树不一定是一颗完全四叉树
         {
             for (int i = 0; i < 4; ++i)
             {
@@ -198,9 +202,12 @@
             }
         }
     }
+    /// <summary>
+    /// 每块一个SamplerTree,一共4x4块
+    /// </summary>
     public class SamplerTree
     {
-        public const byte LBCorner = 0;
+        public const byte LBCorner = 0;     //byte：取值范围是从 0 到 255
         public const byte LTCorner = 1;
         public const byte RTCorner = 2;
         public const byte RBCorner = 3;
@@ -230,7 +237,7 @@
             {
                 SamplerNode node = (SamplerNode)mNode;
                 node.CombineNode(angleErr);
-                if (node.isFullLeaf)
+                if (node.isFullLeaf)    //因为对每块进行了三次细分，所以这段代码实际调用不到，细分一次时可以调到
                 {
                     SamplerLeaf leaf = node.Combine(angleErr);
                     if (leaf != null)

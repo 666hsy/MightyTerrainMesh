@@ -32,16 +32,15 @@
                 return 1;
             }
         }
+        //四叉树高度是2，所以原来一块地形被分割成 4x4 块
         public CreateMeshJob(Terrain t, Bounds VolumnBound, int mx, int mz, MeshLODCreate[] setting)
         {
             LODs = new MTTerrainScanner[setting.Length];
             for (int i = 0; i < setting.Length; ++i)
             {
                 MeshLODCreate s = setting[i];
-                //only first lod stitch borders, other lod use the most detailed border to avoid 
-                //tearing on the border
-                LODs[i] = new MTTerrainScanner(t, VolumnBound, s.Subdivision, s.SlopeAngleError, mx, mz,
-                    i == 0);
+                //Subdivision:3
+                LODs[i] = new MTTerrainScanner(t, VolumnBound, s.Subdivision, s.SlopeAngleError, mx, mz, i == 0);
             }
         }
         public void Update()
@@ -267,7 +266,7 @@
         }
         private Bounds volBnd;
         private Terrain terrain;
-        private Vector3 check_start;
+        private Vector3 check_start;    //整个地形的原点（不是中心点）
         public MTTerrainScanner(Terrain t, Bounds VolumnBound, int sub, float angleErr, int mx, int mz, bool sbrd)
         {
             terrain = t;
@@ -276,13 +275,13 @@
             maxZ = mz;
             subdivision = Mathf.Max(1, sub);
             slopeAngleErr = angleErr;
-            stitchBorder = sbrd;
+            stitchBorder = sbrd;    //0 LOD处理，其它LOD级别不处理
             gridSize = new Vector2(VolumnBound.size.x / mx, VolumnBound.size.z / mz);
 
             check_start = new Vector3(VolumnBound.center.x - VolumnBound.size.x / 2,
                  VolumnBound.center.y + VolumnBound.size.y / 2,
                  VolumnBound.center.z - VolumnBound.size.z / 2);
-            //
+            //detailedSize：8
             detailedSize = 1 << subdivision;
             //
             Trees = new SamplerTree[maxX * maxZ];
@@ -299,11 +298,11 @@
             float fx = (center.x - volBnd.min.x) / volBnd.size.x;
             float fy = (center.z - volBnd.min.z) / volBnd.size.z;
             hitpos.y = terrain.SampleHeight(center) + terrain.gameObject.transform.position.y;
-            hitnormal = terrain.terrainData.GetInterpolatedNormal(fx, fy);
+            hitnormal = terrain.terrainData.GetInterpolatedNormal(fx, fy);//获取给定位置处的插值法线。x 和 y 值为标准化坐标，范围为【0，1】
         }
         private void ScanTree(SamplerTree sampler)
         {
-            sampler.RunSampler(this);
+            sampler.RunSampler(this);   //this: MTTerrainScanner，获得每块及其细分四叉树的高度和法线
             if (!stitchBorder)
                 return;
             int detailedX = curXIdx * detailedSize;
@@ -361,7 +360,7 @@
             float fx = (curXIdx + 0.5f) * gridSize[0];
             float fz = (curZIdx + 0.5f) * gridSize[1];
             Vector3 center = check_start + fx * Vector3.right + fz * Vector3.forward;
-            Vector2 uv = new Vector2((curXIdx + 0.5f) / maxX, (curZIdx + 0.5f) / maxZ);
+            Vector2 uv = new Vector2((curXIdx + 0.5f) / maxX, (curZIdx + 0.5f) / maxZ); //当前块的中心点在整个地形中的UV
             Vector2 uvstep = new Vector2(1f / maxX, 1f / maxZ);
             if (Trees[curXIdx * maxZ + curZIdx] == null)
             {

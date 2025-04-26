@@ -12,7 +12,7 @@ public class MTLODSetting : MeshLODCreate
     public virtual void OnGUIDraw(int idx)
     {
         bEditorUIFoldout = EditorGUILayout.Foldout(bEditorUIFoldout, string.Format("LOD {0}", idx));
-        if (!bEditorUIFoldout)
+        if (bEditorUIFoldout)
         {
             EditorGUI.indentLevel++;
             int curRate = Mathf.FloorToInt(Mathf.Pow(2, Subdivision));
@@ -94,7 +94,7 @@ public class MTMeshEditor : EditorWindow
         {
             terrainTarget = curentTarget;
         }
-        int curSliceCount = Mathf.FloorToInt(Mathf.Pow(2, QuadTreeDepth));
+        int curSliceCount = Mathf.FloorToInt(Mathf.Pow(2, QuadTreeDepth));  //4
         int sliceCount = EditorGUILayout.IntField("Slice Count(NxN)", curSliceCount);
         if (sliceCount != curSliceCount)
         {
@@ -141,7 +141,8 @@ public class MTMeshEditor : EditorWindow
                 MTLog.LogError("no target terrain");
                 return;
             }
-            int gridMax = 1 << QuadTreeDepth;
+            
+            int gridMax = 1 << QuadTreeDepth;   //4
             var tBnd = new Bounds(terrainTarget.transform.TransformPoint(terrainTarget.terrainData.bounds.center),
                 terrainTarget.terrainData.bounds.size);
             dataCreateJob = new CreateMeshJob(terrainTarget, tBnd, gridMax, gridMax, LODSettings);

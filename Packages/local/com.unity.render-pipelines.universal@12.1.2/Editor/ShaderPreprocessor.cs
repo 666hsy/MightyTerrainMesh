@@ -8,6 +8,7 @@ using UnityEngine.Profiling;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.Rendering;
 using System.Runtime.CompilerServices;
+using ShaderVariantLogLevel = UnityEngine.Rendering.ShaderVariantLogLevel;
 
 #if XR_MANAGEMENT_4_0_1_OR_NEWER
 using UnityEditor.XR.Management;
@@ -649,9 +650,9 @@ namespace UnityEditor.Rendering.Universal
             return false;
         }
 
-        void LogShaderVariants(Shader shader, ShaderSnippetData snippetData, ShaderVariantLogLevel logLevel, int prevVariantsCount, int currVariantsCount, double stripTimeMs)
+        void LogShaderVariants(Shader shader, ShaderSnippetData snippetData, UnityEngine.Rendering.Universal.ShaderVariantLogLevel logLevel, int prevVariantsCount, int currVariantsCount, double stripTimeMs)
         {
-            if (logLevel == ShaderVariantLogLevel.AllShaders || shader.name.Contains("Universal Render Pipeline"))
+            if (logLevel == (UnityEngine.Rendering.Universal.ShaderVariantLogLevel)ShaderVariantLogLevel.AllShaders || shader.name.Contains("Universal Render Pipeline"))
             {
                 float percentageCurrent = (float)currVariantsCount / (float)prevVariantsCount * 100f;
                 float percentageTotal = (float)m_TotalVariantsOutputCount / (float)m_TotalVariantsInputCount * 100f;
@@ -721,7 +722,7 @@ namespace UnityEditor.Rendering.Universal
             double stripTimeMs = m_stripTimer.Elapsed.TotalMilliseconds;
             m_stripTimer.Reset();
 
-            if (urpAsset.shaderVariantLogLevel != ShaderVariantLogLevel.Disabled)
+            if (urpAsset.shaderVariantLogLevel != (UnityEngine.Rendering.Universal.ShaderVariantLogLevel)ShaderVariantLogLevel.Disabled)
             {
                 m_TotalVariantsInputCount += prevVariantCount;
                 m_TotalVariantsOutputCount += compilerDataList.Count;

@@ -623,7 +623,7 @@ namespace UnityEditor.Rendering.Universal.ShaderGraph
             public static FieldCollection ScreenSpaceProjector = new FieldCollection()
             {
                 StructFields.Varyings.normalWS,
-                StructFields.Varyings.viewDirectionWS,
+                // StructFields.Varyings.viewDirectionWS,
                 UniversalStructFields.Varyings.staticLightmapUV,
                 UniversalStructFields.Varyings.dynamicLightmapUV,
                 UniversalStructFields.Varyings.sh,
@@ -635,7 +635,7 @@ namespace UnityEditor.Rendering.Universal.ShaderGraph
             public static FieldCollection GBufferProjector = new FieldCollection()
             {
                 StructFields.Varyings.normalWS,
-                StructFields.Varyings.viewDirectionWS,
+                // StructFields.Varyings.viewDirectionWS,
                 UniversalStructFields.Varyings.staticLightmapUV,
                 UniversalStructFields.Varyings.dynamicLightmapUV,
                 UniversalStructFields.Varyings.sh,
@@ -653,7 +653,7 @@ namespace UnityEditor.Rendering.Universal.ShaderGraph
                 StructFields.Varyings.tangentWS,
                 StructFields.Varyings.positionWS,
                 StructFields.Varyings.texCoord0,
-                StructFields.Varyings.viewDirectionWS,
+                // StructFields.Varyings.viewDirectionWS,
                 UniversalStructFields.Varyings.staticLightmapUV,
                 UniversalStructFields.Varyings.dynamicLightmapUV,
                 UniversalStructFields.Varyings.sh,

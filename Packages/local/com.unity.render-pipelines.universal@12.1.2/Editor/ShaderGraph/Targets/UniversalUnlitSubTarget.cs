@@ -298,7 +298,7 @@ namespace UnityEditor.Rendering.Universal.ShaderGraph
                 {
                     StructFields.Varyings.positionWS,
                     StructFields.Varyings.normalWS,
-                    StructFields.Varyings.viewDirectionWS,
+                    // StructFields.Varyings.viewDirectionWS,
                 };
 
                 public static readonly FieldCollection DepthNormalsOnly = new FieldCollection()

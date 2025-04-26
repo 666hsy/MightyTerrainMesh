@@ -53,6 +53,11 @@ namespace UnityEditor.Rendering.Universal.ShaderGraph
 #endif
         }
 
+        public ScriptableObject GetMetadataObject(GraphDataReadOnly graph)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public virtual string identifier => GetType().Name;
         public virtual ScriptableObject GetMetadataObject()
         {
